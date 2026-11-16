@@ -1,0 +1,23 @@
+name: Publications
+
+# Reads my works from ORCID once a week and opens a pull request when something changed.
+# Manual data (roles, notes, books that are not in ORCID) lives in publications.overrides.yml.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rabiayrk/orcid2site@v0.1.0
+        with:
+          orcid: 0009-0007-2222-9323
+          overrides: publications.overrides.yml
+          json: src/data/publications.json
