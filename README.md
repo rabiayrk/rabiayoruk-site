@@ -21,14 +21,16 @@ Editing content means editing one file. No code changes needed.
 | What | File |
 |---|---|
 | Name, intro, links, research interests, papers in preparation, experience, education, mentoring | `src/data/profile.yaml` |
-| Papers and books (BibTeX is generated from these) | `src/data/publications.yaml` |
+| Papers and books (synced from ORCID, BibTeX is generated from these) | `src/data/publications.json`, edits in `publications.overrides.yml` |
 | Project case studies (text, numbers, stack, architecture diagram) | `src/content/projects/*.md` |
 | Demo listings for the home page playground (synthetic) | `src/data/listings.ts` |
 | Portrait and screenshots | `src/assets/` |
 
 ### Add a paper
 
-Copy a block in `src/data/publications.yaml`, change the fields, push. The paper appears on the home page, in `/publications.bib`, in `/bib/<id>.bib` and in the JSON-LD.
+Add it to ORCID. Every Monday the Publications workflow runs [orcid2site](https://github.com/rabiayrk/orcid2site), which reads ORCID, fills in the details from Crossref and opens a pull request that updates `src/data/publications.json`. Merge it and the paper appears on the home page, in `/publications.bib`, in `/bib/<id>.bib` and in the JSON-LD. To run it now, start the workflow by hand under Actions.
+
+Do not edit `publications.json` by hand. Roles, notes, fixes and works that are not in ORCID (the books) go in `publications.overrides.yml`.
 
 ### Add a project
 

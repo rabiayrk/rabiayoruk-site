@@ -1,0 +1,53 @@
+# Manual data for orcid2site. The weekly workflow reads this file and never writes it.
+
+works:
+  - match: {doi: 10.3389/frai.2025.1606431}
+    key: kaplan2025scrapus
+    role: Third author
+    publisher: Frontiers Media
+    note: >-
+      Open access, CC BY. Reports about 90% precision and recall for lead qualification,
+      and extraction F1 rising from about 0.77 to 0.92.
+
+  - match: {doi: 10.26650/d3ai.1715642}
+    key: yoruk2025jobagent
+    role: Sole author
+    title: >-
+      An AI-based personalised job recommendation and application assistant agent for
+      enhanced employment matching: a Scrapus use case
+    publisher: Istanbul University Press
+
+  # No DOI: matched by the ORCID put-code, which stays the same if you edit the title in ORCID.
+  - match: {id: "orcid:233552366"}
+    key: yoruk2025kolayai
+    role: Sole author
+    month: 1
+
+  - match: {id: "orcid:233552368"}
+    key: yoruk2018clv
+    role: First author
+    month: 7
+    language: tr
+
+extra:
+  - type: book
+    title: "İnternet Nasıl Çalışır? (How the Internet Works)"
+    authors: ["Seker, Sadi Evren", "Yoruk, Rabia"]
+    role: Co-author
+    venue: Bilkav
+    publisher: Bilkav
+    year: 2018
+    month: 5
+    language: tr
+    key: seker2018internet
+
+  - type: book
+    title: "Başlangıç Düzeyinde C++ Öğrenimine Giriş (Introduction to C++ for Beginners)"
+    authors: ["Seker, Sadi Evren", "Yoruk, Rabia"]
+    role: Co-author
+    venue: Bilkav
+    publisher: Bilkav
+    year: 2018
+    month: 3
+    key: seker2018cpp
+    language: tr

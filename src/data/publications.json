@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "orcid": "0009-0007-2222-9323",
+  "works": [
+    {
+      "id": "doi:10.3389/frai.2025.1606431",
+      "key": "kaplan2025scrapus",
+      "type": "article",
+      "title": "A review of AI-based business lead generation: Scrapus as a case study",
+      "authors": [
+        {
+          "name": "Ahmet Kaplan",
+          "family": "Kaplan",
+          "given": "Ahmet",
+          "owner": false
+        },
+        {
+          "name": "Sadi Evren Seker",
+          "family": "Seker",
+          "given": "Sadi Evren",
+          "owner": false
+        },
+        {
+          "name": "Rabia Yoruk",
+          "family": "Yoruk",
+          "given": "Rabia",
+          "owner": true
+        }
+      ],
+      "year": 2025,
+      "month": 11,
+      "day": 6,
+      "date": "2025-11-06",
+      "venue": "Frontiers in Artificial Intelligence",
+      "publisher": "Frontiers Media",
+      "volume": "8",
+      "article_number": "1606431",
+      "doi": "10.3389/frai.2025.1606431",
+      "url": "https://doi.org/10.3389/frai.2025.1606431",
+      "role": "Third author",
+      "note": "Open access, CC BY. Reports about 90% precision and recall for lead qualification, and extraction F1 rising from about 0.77 to 0.92.",
+      "sources": [
+        "orcid",
+        "crossref"
+      ]
+    },
+    {
+      "id": "doi:10.26650/d3ai.1715642",
+      "key": "yoruk2025jobagent",
+      "type": "article",
+      "title": "An AI-based personalised job recommendation and application assistant agent for enhanced employment matching: a Scrapus use case",
+      "authors": [
+        {
+          "name": "Rabia Yörük",
+          "family": "Yörük",
+          "given": "Rabia",
+          "owner": true
+        }
+      ],
+      "year": 2025,
+      "month": 7,
+      "day": 21,
+      "date": "2025-07-21",
+      "venue": "Journal of Data Analytics and Artificial Intelligence Applications",
+      "publisher": "Istanbul University Press",
+      "volume": "1",
+      "issue": "2",
+      "pages": "172-189",
+      "doi": "10.26650/d3ai.1715642",
+      "url": "https://doi.org/10.26650/d3ai.1715642",
+      "language": "en",
+      "role": "Sole author",
+      "sources": [
+        "orcid",
+        "crossref"
+      ]
+    },
+    {
+      "id": "orcid:233552366",
+      "key": "yoruk2025kolayai",
+      "type": "article",
+      "title": "Enhancing SME operations with machine learning and business intelligence: a case study of Kolay.ai",
+      "authors": [
+        {
+          "name": "Rabia Yörük",
+          "family": "Yörük",
+          "given": "Rabia",
+          "owner": true
+        }
+      ],
+      "year": 2025,
+      "month": 1,
+      "date": "2025-01",
+      "venue": "Journal of Data Analytics and Artificial Intelligence Applications",
+      "publisher": "Istanbul University Press",
+      "volume": "1",
+      "issue": "1",
+      "pages": "61-83",
+      "url": "https://dergipark.org.tr/en/pub/jdaia/article/1607791",
+      "role": "Sole author",
+      "sources": [
+        "orcid"
+      ]
+    },
+    {
+      "id": "orcid:233552368",
+      "key": "yoruk2018clv",
+      "type": "chapter",
+      "title": "Customer lifetime value (Müşteri Yaşamboyu Değeri)",
+      "authors": [
+        {
+          "name": "Rabia Yörük",
+          "family": "Yörük",
+          "given": "Rabia",
+          "owner": true
+        },
+        {
+          "name": "Eda Eşmekaya",
+          "family": "Eşmekaya",
+          "given": "Eda",
+          "owner": false
+        }
+      ],
+      "year": 2018,
+      "month": 7,
+      "date": "2018-07",
+      "venue": "YBS Ansiklopedi",
+      "volume": "5",
+      "issue": "2",
+      "pages": "26-40",
+      "url": "https://ybsansiklopedi.com/cilt-5-sayi-2-temmuz-2018/",
+      "language": "tr",
+      "role": "First author",
+      "sources": [
+        "orcid"
+      ]
+    },
+    {
+      "id": "extra:internet-nasil-calisir-how-the-internet-works",
+      "key": "seker2018internet",
+      "type": "book",
+      "title": "İnternet Nasıl Çalışır? (How the Internet Works)",
+      "authors": [
+        {
+          "name": "Sadi Evren Seker",
+          "family": "Seker",
+          "given": "Sadi Evren",
+          "owner": false
+        },
+        {
+          "name": "Rabia Yoruk",
+          "family": "Yoruk",
+          "given": "Rabia",
+          "owner": true
+        }
+      ],
+      "year": 2018,
+      "month": 5,
+      "date": "2018-05",
+      "venue": "Bilkav",
+      "publisher": "Bilkav",
+      "language": "tr",
+      "role": "Co-author",
+      "sources": [
+        "overrides"
+      ]
+    },
+    {
+      "id": "extra:baslangic-duzeyinde-c-ogrenimine-giris-introduction-to-c",
+      "key": "seker2018cpp",
+      "type": "book",
+      "title": "Başlangıç Düzeyinde C++ Öğrenimine Giriş (Introduction to C++ for Beginners)",
+      "authors": [
+        {
+          "name": "Sadi Evren Seker",
+          "family": "Seker",
+          "given": "Sadi Evren",
+          "owner": false
+        },
+        {
+          "name": "Rabia Yoruk",
+          "family": "Yoruk",
+          "given": "Rabia",
+          "owner": true
+        }
+      ],
+      "year": 2018,
+      "month": 3,
+      "date": "2018-03",
+      "venue": "Bilkav",
+      "publisher": "Bilkav",
+      "language": "tr",
+      "role": "Co-author",
+      "sources": [
+        "overrides"
+      ]
+    }
+  ]
+}

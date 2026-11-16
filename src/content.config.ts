@@ -37,8 +37,41 @@ const projects = defineCollection({
     }),
 });
 
+// src/data/publications.json is written by orcid2site (.github/workflows/publications.yml).
+// This maps its fields to the schema below. Manual data goes in publications.overrides.yml.
+type SyncedWork = {
+  key: string;
+  type: string;
+  title: string;
+  authors: { name: string; family?: string; given?: string }[];
+  year: number;
+  [field: string]: unknown;
+};
+
+const toPublication = (w: SyncedWork) => ({
+  id: w.key,
+  type: w.type === 'book' ? 'book' : w.type === 'chapter' ? 'entry' : 'article',
+  title: w.title,
+  authors: w.authors.map((a) => (a.family && a.given ? `${a.family}, ${a.given}` : a.name)),
+  role: w.role ?? '',
+  venue: w.venue ?? w.publisher ?? '',
+  publisher: w.publisher,
+  year: w.year,
+  volume: w.volume,
+  issue: w.issue,
+  pages: w.pages,
+  articleNumber: w.article_number,
+  date: w.date,
+  doi: w.doi,
+  url: w.url,
+  language: w.language,
+  note: w.note,
+});
+
 const publications = defineCollection({
-  loader: file('src/data/publications.yaml'),
+  loader: file('src/data/publications.json', {
+    parser: (text) => (JSON.parse(text).works as SyncedWork[]).map(toPublication),
+  }),
   schema: z.object({
     type: z.enum(['article', 'entry', 'book']),
     title: z.string(),
