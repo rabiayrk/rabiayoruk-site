@@ -36,8 +36,8 @@ experience:
   - { period: "2025-now", role: "Co-founder", org: "Scrapus", place: "Tallinn, part-time", text: "Web monitoring product. About 60,000 records a day for TEB, from collection to API." }
   - { period: "2025", role: "Senior Software Engineer", org: "AI startup", place: "US, remote", text: "Built an AI cold outreach platform for sales teams, from zero to first trial users." }
   - { period: "2023-2025", role: "Tech Lead", org: "OptiWisdom", place: "Istanbul", text: "Led about five parallel client projects, 20+ delivered. AutoML platform for a large telecommunications company." }
-  - { period: "2022-2023", role: "Data Scientist and ML Engineer", org: "OptiWisdom", place: "Remote", text: "Kolay.AI demand forecasting and the XchangeWiser market simulation." }
-  - { period: "2020-2022", role: "Software Engineer, Backend and Data", org: "OptiWisdom", place: "Remote", text: "REST APIs, Celery and Redis jobs, PostgreSQL and MySQL tuning." }
+  - { period: "2022-2023", role: "Data Scientist and ML Engineer", org: "OptiWisdom", place: "remote", text: "Kolay.AI demand forecasting and the XchangeWiser market simulation." }
+  - { period: "2020-2022", role: "Software Engineer, Backend and Data", org: "OptiWisdom", place: "remote", text: "REST APIs, Celery and Redis jobs, PostgreSQL and MySQL tuning." }
   - { period: "2019", role: "Software Developer", org: "Epigra", place: "Istanbul", text: "Web apps and CMS projects in PHP and Laravel." }
   - { period: "2018-2019", role: "Python Developer", org: "Bilkav", place: "Istanbul", text: "Python tools. Co-wrote two programming books." }
 

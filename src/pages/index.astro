@@ -12,6 +12,21 @@ const pubs = await getCollection('publications');
 const papers = pubs.filter((p) => p.data.type !== 'book');
 const books = pubs.filter((p) => p.data.type === 'book');
 
+type Job = (typeof profile.experience)[number];
+const jobs: { org: string; place: string; period: string; roles: Job[] }[] = [];
+for (const e of profile.experience) {
+  const last = jobs.at(-1);
+  if (last && last.org === e.org) last.roles.push(e);
+  else jobs.push({ org: e.org, place: e.place, period: e.period, roles: [e] });
+}
+for (const g of jobs) {
+  const places = [...new Set(g.roles.map((r) => r.place))];
+  g.place = places.join(', ');
+  const start = g.roles.at(-1)!.period.split('-')[0];
+  const end = g.roles[0].period.split('-').at(-1);
+  g.period = start === end ? start : `${start}-${end}`;
+}
+
 const personId = 'https://rabiayoruk.com/#person';
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -138,11 +153,19 @@ const jsonLd = {
   <section id="experience" class="section" aria-labelledby="exp-title">
     <header><span class="num">04</span><h2 id="exp-title">Experience</h2></header>
     <div>
-      <ol class="rows">
-        {profile.experience.map((e) => (
+      <ol class="rows jobs">
+        {jobs.map((g) => (
           <li>
-            <span class="mono when">{e.period}</span>
-            <div><p class="row-title">{e.role}, {e.org} <span class="mono muted">· {e.place}</span></p><p class="muted">{e.text}</p></div>
+            <span class="mono when">{g.period}</span>
+            <div>
+              <p class="org">{g.org} <span class="mono muted">· {g.place}</span></p>
+              {g.roles.map((r) => (
+                <div class="role">
+                  <p class="role-title">{r.role}{g.roles.length > 1 && <span class="mono muted"> · {r.period}</span>}</p>
+                  <p class="muted">{r.text}</p>
+                </div>
+              ))}
+            </div>
           </li>
         ))}
       </ol>
@@ -209,11 +232,11 @@ const jsonLd = {
     .work-title, .work-sum, .work-meta, .work-go { grid-column: 2; }
   }
   .metric { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--ink); line-height: 1.1; }
-  .metric-label { color: var(--ink-3); font-size: 0.75rem; line-height: 1.4; margin-bottom: 8px; }
+  .metric-label { color: var(--ink-2); font-size: 0.8125rem; line-height: 1.45; margin-bottom: 8px; max-width: 24ch; }
   .work-title { font-size: var(--step-1); font-weight: 600; }
   .work-sum { color: var(--ink-2); }
-  .work-meta { color: var(--ink-3); font-size: 0.75rem; margin-top: 6px; }
-  .work-go { color: var(--accent); font-size: 0.75rem; }
+  .work-meta { color: var(--ink-2); font-size: 0.8125rem; margin-top: 6px; }
+  .work-go { color: var(--accent); font-size: 0.8125rem; }
   .work-row:hover .work-title { color: var(--accent); }
 
   .interests { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
@@ -225,22 +248,28 @@ const jsonLd = {
   .prep { margin: 0; padding-left: 1.1em; max-width: 62ch; color: var(--ink-2); }
   .prep li::marker { color: var(--accent); }
 
-  .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+  .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: 30px; }
   .pubs p { margin: 0; }
-  .pub-title { font-weight: 600; }
+  .pub-title { font-size: var(--step-1); font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 6px !important; max-width: 60ch; }
   .pub-title a { text-decoration: none; }
   .pub-auth, .pub-venue { color: var(--ink-2); font-size: 0.9375rem; }
   .pub-auth strong { color: var(--ink); font-weight: 600; }
-  .pub-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 4px !important; color: var(--ink-3); font-size: 0.75rem; }
+  .pub-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px !important; color: var(--ink-2); font-size: 0.8125rem; }
   .pub-note { font-size: 0.875rem; margin-top: 4px !important; }
   .books { margin: 0; padding-left: 1.1em; color: var(--ink-2); font-size: 0.9375rem; }
-  .all { margin-top: 24px; font-size: 0.75rem; }
+  .all { margin-top: 24px; font-size: 0.8125rem; }
 
   .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
   .rows li { grid-template-columns: 96px minmax(0, 1fr); }
   .rows p { margin: 0; }
-  .when { color: var(--ink-3); padding-top: 3px; font-size: 0.75rem; }
+  .when { color: var(--ink-2); padding-top: 3px; font-size: 0.8125rem; }
   .row-title { font-weight: 600; }
+  .org { font-weight: 600; font-size: var(--step-0); }
+  .role { margin-top: 6px; }
+  .role + .role { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+  .role-title { color: var(--ink); font-size: 0.9375rem; }
+  .jobs { gap: 22px; }
+  .pubs .idx { padding-top: 6px; }
   .rows .muted { font-size: 0.9375rem; }
 
   .contact p { max-width: 60ch; }
