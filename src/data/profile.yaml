@@ -5,17 +5,13 @@ site: "https://rabiayoruk.com"
 location: "Türkiye and the US."
 
 intro: "I build data and LLM systems that run in production, and I study how they fail."
-lede: "Senior Software Engineer with 7+ years in Python, backend, data pipelines, ML and LLM applications (RAG, agents). From January 2027 I am an M.S. student in Software and Security Engineering at Texas Tech University."
+lede: "Senior Software Engineer with 7+ years in Python, backend, data pipelines, ML and LLM applications (RAG, agents). From January 2027, I will be an M.S. student in Software and Security Engineering at Texas Tech University."
 
 links:
   - { label: "Google Scholar", url: "https://scholar.google.com/citations?user=r2U_8mAAAAAJ&hl=en" }
   - { label: "ORCID", url: "https://orcid.org/0009-0007-2222-9323" }
   - { label: "GitHub", url: "https://github.com/rabiayrk" }
   - { label: "LinkedIn", url: "https://www.linkedin.com/in/rabia-yoruk/" }
-
-cvs:
-  - { label: "CV, Backend", file: "/cv/rabia-yoruk-cv-backend.pdf", available: true }
-  - { label: "CV, Data and ML", file: "/cv/rabia-yoruk-cv-data-ml.pdf", available: true }
 
 research:
   - title: "Reliable LLM systems"

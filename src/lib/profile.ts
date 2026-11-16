@@ -11,7 +11,6 @@ export interface Profile {
   intro: string;
   lede: string;
   links: { label: string; url: string }[];
-  cvs: { label: string; file: string; available: boolean }[];
   research: { title: string; text: string }[];
   inPreparation: string[];
   education: { period: string; title: string; org: string; note?: string }[];

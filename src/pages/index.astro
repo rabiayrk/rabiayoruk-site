@@ -33,7 +33,6 @@ const jsonLd = {
   ],
 };
 
-const cvs = profile.cvs.filter((c) => c.available);
 ---
 <Base
   title="Rabia Yoruk · Data, ML and LLM systems"
@@ -49,7 +48,6 @@ const cvs = profile.cvs.filter((c) => c.available);
       <ul class="hero-links mono">
         <li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
         {profile.links.map((l) => <li><a href={l.url} rel="me">{l.label}</a></li>)}
-        {cvs.map((c) => <li><a href={c.file} download>{c.label} (PDF)</a></li>)}
       </ul>
     </div>
     <Image class="portrait" src={portrait} alt="Portrait of Rabia Yoruk" widths={[160, 320]} sizes="160px" width={320} height={296} loading="eager" format="avif" />

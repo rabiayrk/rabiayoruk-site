@@ -24,7 +24,6 @@ Editing content means editing one file. No code changes needed.
 | Papers and books (BibTeX is generated from these) | `src/data/publications.yaml` |
 | Project case studies (text, numbers, stack, architecture diagram) | `src/content/projects/*.md` |
 | Demo listings for the home page playground (synthetic) | `src/data/listings.ts` |
-| CV PDFs | `public/cv/` (then set `available: true` in `profile.yaml`) |
 | Portrait and screenshots | `src/assets/` |
 
 ### Add a paper
