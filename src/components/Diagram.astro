@@ -1,0 +1,125 @@
+---
+type Kind = 'process' | 'model' | 'store' | 'external';
+interface Node { id: string; label: string; note?: string; kind: Kind }
+interface Props {
+  columns: Node[][];
+  edges: [string, string][];
+  caption: string;
+  fig: number;
+  uid: string;
+}
+
+const { columns, edges, caption, fig, uid } = Astro.props;
+
+const W = 132, H = 48, PAD = 8;
+
+type Placed = Node & { x: number; y: number; col: number };
+
+function layout(horizontal: boolean) {
+  const GX = horizontal ? 28 : 12;
+  const GY = horizontal ? 14 : 30;
+  const placed = new Map<string, Placed>();
+  if (horizontal) {
+    const heights = columns.map((c) => c.length * H + (c.length - 1) * GY);
+    const maxH = Math.max(...heights);
+    columns.forEach((col, i) => {
+      col.forEach((n, j) => {
+        placed.set(n.id, { ...n, col: i, x: PAD + i * (W + GX), y: PAD + (maxH - heights[i]) / 2 + j * (H + GY) });
+      });
+    });
+    return { placed, w: columns.length * W + (columns.length - 1) * GX + 2 * PAD, h: maxH + 2 * PAD, GX, GY };
+  }
+  const widths = columns.map((c) => c.length * W + (c.length - 1) * GX);
+  const maxW = Math.max(...widths);
+  columns.forEach((row, i) => {
+    row.forEach((n, j) => {
+      placed.set(n.id, { ...n, col: i, x: PAD + (maxW - widths[i]) / 2 + j * (W + GX), y: PAD + i * (H + GY) });
+    });
+  });
+  return { placed, w: maxW + 2 * PAD, h: columns.length * H + (columns.length - 1) * GY + 2 * PAD, GX, GY };
+}
+
+function paths(horizontal: boolean, l: ReturnType<typeof layout>) {
+  return edges.map(([a, b]) => {
+    const s = l.placed.get(a)!, e = l.placed.get(b)!;
+    if (s.col === e.col) {
+      if (horizontal) {
+        const down = s.y < e.y;
+        const x = s.x + W / 2;
+        return `M${x} ${down ? s.y + H : s.y} V${down ? e.y : e.y + H}`;
+      }
+      const right = s.x < e.x;
+      const y = s.y + H / 2;
+      return `M${right ? s.x + W : s.x} ${y} H${right ? e.x : e.x + W}`;
+    }
+    if (horizontal) {
+      const sx = s.x + W, sy = s.y + H / 2, ex = e.x, ey = e.y + H / 2;
+      const mid = sx + l.GX / 2;
+      return `M${sx} ${sy} H${mid} V${ey} H${ex}`;
+    }
+    const sx = s.x + W / 2, sy = s.y + H, ex = e.x + W / 2, ey = e.y;
+    const mid = sy + l.GY / 2;
+    return `M${sx} ${sy} V${mid} H${ex} V${ey}`;
+  });
+}
+
+const views = [true, false].map((horizontal) => {
+  const l = layout(horizontal);
+  return { horizontal, ...l, nodes: [...l.placed.values()], d: paths(horizontal, l) };
+});
+
+const summary = columns.map((c) => c.map((n) => n.label).join(' and ')).join(', then ');
+---
+<figure class="diagram">
+  {views.map((v) => (
+    <svg
+      class={v.horizontal ? 'h' : 'v'}
+      viewBox={`0 0 ${v.w} ${v.h}`}
+      width={v.w}
+      height={v.h}
+      role="img"
+      aria-labelledby={`${uid}-${v.horizontal ? 'h' : 'v'}-t`}
+    >
+      <title id={`${uid}-${v.horizontal ? 'h' : 'v'}-t`}>{caption} Flow: {summary}.</title>
+      <defs>
+        <marker id={`${uid}-${v.horizontal ? 'h' : 'v'}-arrow`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L8 4 L0 8 z" class="arrowhead" />
+        </marker>
+      </defs>
+      {v.d.map((d) => (
+        <path d={d} class="edge" marker-end={`url(#${uid}-${v.horizontal ? 'h' : 'v'}-arrow)`} />
+      ))}
+      {v.nodes.map((n) => (
+        <g class={`node ${n.kind}`}>
+          <rect x={n.x} y={n.y} width={W} height={H} rx="2" />
+          {n.kind === 'store' && <path d={`M${n.x} ${n.y + 6} H${n.x + W}`} class="store-line" />}
+          <text x={n.x + 10} y={n.y + (n.note ? 21 : 29)} class="lbl">{n.label}</text>
+          {n.note && <text x={n.x + 10} y={n.y + 37} class="note">{n.note}</text>}
+        </g>
+      ))}
+    </svg>
+  ))}
+  <figcaption><span class="label">Fig. {fig}</span> {caption}</figcaption>
+</figure>
+
+<style>
+  .diagram { margin: 0; }
+  .diagram svg { width: 100%; height: auto; overflow: visible; }
+  .diagram svg.h { display: none; max-width: var(--w, 100%); }
+  .diagram svg.v { max-width: 420px; margin: 0 auto; }
+  @media (min-width: 720px) {
+    .diagram svg.h { display: block; }
+    .diagram svg.v { display: none; }
+  }
+  .edge { fill: none; stroke: var(--ink-3); stroke-width: 1; }
+  .arrowhead { fill: var(--ink-3); }
+  .node rect { fill: var(--bg); stroke: var(--ink); stroke-width: 1; }
+  .node.model rect { fill: var(--signal-soft); stroke: var(--accent); }
+  .node.external rect { stroke: var(--rule-2); stroke-dasharray: 3 3; }
+  .store-line { stroke: var(--ink); stroke-width: 1; }
+  .lbl { font-family: var(--sans); font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+  .note { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-3); }
+  .node.external .lbl { fill: var(--ink-2); font-weight: 500; }
+  figcaption { margin-top: 12px; font-size: var(--step--1); color: var(--ink-2); }
+  figcaption .label { margin-right: 8px; color: var(--accent); }
+</style>

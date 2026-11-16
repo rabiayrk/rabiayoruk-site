@@ -1,0 +1,121 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Diagram from '../../components/Diagram.astro';
+import Chart from '../../components/Chart.astro';
+import { isMe, short } from '../../lib/pubs';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((p, i) => ({
+    params: { slug: p.id },
+    props: { p, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+const { p, next } = Astro.props;
+const d = p.data;
+const { Content } = await render(p);
+const pub = d.publication ? await getEntry('publications', d.publication) : undefined;
+let fig = 1;
+---
+<Base title={`${d.title} · Rabia Yoruk`} description={d.summary} og={p.id}>
+  <article class="case">
+    <nav class="crumb mono" aria-label="Breadcrumb"><a href="/#work">Work</a> / {d.title}</nav>
+
+    <header class="case-head">
+      <h1>{d.title}</h1>
+      <p class="lede">{d.summary}</p>
+      <dl class="meta">
+        <div><dt class="label">Role</dt><dd>{d.role}</dd></div>
+        <div><dt class="label">Where</dt><dd>{d.org}</dd></div>
+        <div><dt class="label">When</dt><dd>{d.period}</dd></div>
+        <div><dt class="label">Stack</dt><dd><ul class="tags">{d.stack.map((s) => <li>{s}</li>)}</ul></dd></div>
+      </dl>
+    </header>
+
+    <section class="numbers" aria-label="Key numbers">
+      {d.numbers.map((n) => (
+        <div><p class="n">{n.value}</p><p class="mono nl">{n.label}</p></div>
+      ))}
+    </section>
+
+    {d.diagram && (
+      <section class="fig-wide" aria-label="Architecture">
+        <Diagram columns={d.diagram.columns} edges={d.diagram.edges} caption={d.diagram.caption} fig={fig++} uid={`d-${p.id}`} />
+      </section>
+    )}
+
+    <div class="body">
+      <div class="prose"><Content /></div>
+      {pub && (
+        <aside class="side" aria-label="Related paper">
+          <p class="label">Paper</p>
+          <p class="side-title"><a href={pub.data.url}>{pub.data.title}</a></p>
+          <p class="mono muted">
+            {pub.data.authors.map((a) => (isMe(a) ? `${short(a)} (me)` : short(a))).join(', ')}.
+            {' '}{pub.data.venue}, {pub.data.year}.
+          </p>
+          <p class="mono"><a href={`/bib/${pub.id}.bib`} download>BibTeX</a></p>
+        </aside>
+      )}
+    </div>
+
+    {d.chart && (
+      <section class="fig-mid" aria-label="Example chart">
+        <Chart kind={d.chart} fig={fig++} />
+      </section>
+    )}
+
+    {d.screens.length > 0 && (
+      <section class="screens" aria-label="Screens">
+        {d.screens.map((s) => (
+          <figure>
+            <Image src={s.src} alt={s.alt} widths={[640, 1120, 1600]} sizes="(min-width: 1184px) 1120px, 100vw" loading="lazy" />
+            <figcaption><span class="label">Fig. {fig++}</span> {s.caption}</figcaption>
+          </figure>
+        ))}
+      </section>
+    )}
+
+    <footer class="next">
+      <span class="label">Next</span>
+      <a href={`/work/${next.id}/`}>{next.data.title} <span aria-hidden="true">→</span></a>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .case { padding: 24px 0 72px; }
+  .crumb { color: var(--ink-3); margin-bottom: 32px; }
+  .crumb a { color: var(--ink-2); }
+  .case-head h1 { font-size: var(--step-3); letter-spacing: -0.025em; margin-bottom: 16px; }
+  .lede { font-size: var(--step-1); color: var(--ink-2); max-width: 54ch; line-height: 1.45; }
+  .meta { display: grid; gap: 14px 32px; margin: 28px 0 0; padding: 16px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); }
+  @media (min-width: 720px) { .meta { grid-template-columns: 1fr 1fr 1fr 2fr; } }
+  .meta dd { margin: 4px 0 0; font-size: 0.9375rem; }
+
+  .numbers { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 40px 0; }
+  .numbers .n { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.02em; margin: 0; font-variant-numeric: tabular-nums; }
+  .numbers .nl { color: var(--ink-3); margin: 4px 0 0; font-size: 0.75rem; max-width: 30ch; }
+
+  .fig-wide { margin: 24px 0 56px; padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .fig-mid { margin: 56px 0; max-width: 820px; }
+
+  .body { display: grid; gap: 32px; }
+  @media (min-width: 900px) { .body { grid-template-columns: minmax(0, 1fr) 280px; gap: 56px; } }
+  .side { border-top: 2px solid var(--signal); padding-top: 12px; align-self: start; position: sticky; top: 24px; font-size: 0.9375rem; }
+  .side p { margin: 6px 0; }
+  .side .mono { font-size: 0.75rem; }
+  .side-title { font-weight: 600; }
+
+  .screens { display: grid; gap: 40px; margin: 56px 0; }
+  .screens figure { margin: 0; }
+  .screens img { width: 100%; height: auto; border: 1px solid var(--rule); }
+  .screens figcaption { margin-top: 10px; font-size: var(--step--1); color: var(--ink-2); }
+  .screens figcaption .label { margin-right: 8px; color: var(--accent); }
+
+  .next { border-top: 1px solid var(--ink); padding-top: 16px; display: flex; gap: 16px; align-items: baseline; }
+  .next a { font-size: var(--step-1); font-weight: 600; text-decoration: none; }
+</style>

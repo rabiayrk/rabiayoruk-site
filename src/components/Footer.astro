@@ -1,0 +1,12 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="wrap foot">
+  <p class="mono">© {year} Rabia Yoruk. Built with Astro. No cookies, no trackers.</p>
+  <p class="mono"><a href="/publications.bib">publications.bib</a> · <a href="/sitemap-index.xml">sitemap</a></p>
+</footer>
+
+<style>
+  .foot { border-top: 1px solid var(--rule); padding-top: 20px; padding-bottom: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--ink-3); }
+  .foot p { margin: 0; }
+</style>

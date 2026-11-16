@@ -1,0 +1,251 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Pipeline from '../components/Pipeline.astro';
+import portrait from '../assets/portrait.png';
+import { profile } from '../lib/profile';
+import { isMe, short, scholarlyArticle } from '../lib/pubs';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const pubs = await getCollection('publications');
+const papers = pubs.filter((p) => p.data.type !== 'book');
+const books = pubs.filter((p) => p.data.type === 'book');
+
+const personId = 'https://rabiayoruk.com/#person';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: profile.name,
+      jobTitle: profile.title,
+      email: `mailto:${profile.email}`,
+      url: profile.site,
+      image: new URL('/og/home.png', profile.site).href,
+      sameAs: profile.links.map((l) => l.url),
+      knowsAbout: ['Machine learning', 'Large language models', 'Retrieval-augmented generation', 'Data pipelines', 'Web data collection', 'Python'],
+      alumniOf: { '@type': 'CollegeOrUniversity', name: 'Istanbul Sabahattin Zaim University' },
+      affiliation: { '@type': 'CollegeOrUniversity', name: 'Texas Tech University' },
+    },
+    ...pubs.map((p) => scholarlyArticle(p, personId)),
+  ],
+};
+
+const cvs = profile.cvs.filter((c) => c.available);
+---
+<Base
+  title="Rabia Yoruk · Data, ML and LLM systems"
+  description="Rabia Yoruk, Senior Software Engineer. Data pipelines, ML and LLM systems in production. Projects, papers and research interests."
+  jsonLd={jsonLd}
+>
+  <section class="hero" aria-labelledby="intro">
+    <div class="hero-text">
+      <p class="label">Rabia Yoruk · {profile.title}</p>
+      <h1 id="intro">{profile.intro}</h1>
+      <p class="lede">{profile.lede}</p>
+      <p class="mono loc">{profile.location}</p>
+      <ul class="hero-links mono">
+        <li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
+        {profile.links.map((l) => <li><a href={l.url} rel="me">{l.label}</a></li>)}
+        {cvs.map((c) => <li><a href={c.file} download>{c.label} (PDF)</a></li>)}
+      </ul>
+    </div>
+    <Image class="portrait" src={portrait} alt="Portrait of Rabia Yoruk" widths={[160, 320]} sizes="160px" width={320} height={296} loading="eager" format="avif" />
+  </section>
+
+  <section class="demo" aria-labelledby="demo-title">
+    <header class="demo-head">
+      <span class="num mono">00</span>
+      <h2 id="demo-title">How Scrapus works</h2>
+      <p class="muted">Public listings come in on the left. Records that match banned medicines leave on the right, into TEB's systems. Click the LLM stage to test it.</p>
+    </header>
+    <Pipeline />
+  </section>
+
+  <section id="work" class="section" aria-labelledby="work-title">
+    <header><span class="num">01</span><h2 id="work-title">Work</h2></header>
+    <ol class="work">
+      {projects.map((p) => (
+        <li>
+          <a class="work-row" href={`/work/${p.id}/`}>
+            <span class="metric">{p.data.metric}</span>
+            <span class="metric-label mono">{p.data.metricLabel}</span>
+            <span class="work-title">{p.data.title}</span>
+            <span class="work-sum">{p.data.summary}</span>
+            <span class="work-meta mono">{p.data.role} · {p.data.period}</span>
+            <span class="work-go mono" aria-hidden="true">Case study →</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="research" class="section" aria-labelledby="research-title">
+    <header><span class="num">02</span><h2 id="research-title">Research</h2></header>
+    <div>
+      <ol class="interests">
+        {profile.research.map((r, i) => (
+          <li>
+            <span class="mono idx">{String.fromCharCode(97 + i)}.</span>
+            <div><h3>{r.title}</h3><p class="muted">{r.text}</p></div>
+          </li>
+        ))}
+      </ol>
+      <h3 class="label sub">In preparation</h3>
+      <ul class="prep">
+        {profile.inPreparation.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section id="papers" class="section" aria-labelledby="papers-title">
+    <header><span class="num">03</span><h2 id="papers-title">Papers</h2></header>
+    <div>
+      <ol class="pubs">
+        {papers.map((p, i) => (
+          <li id={p.id}>
+            <span class="mono idx">[{i + 1}]</span>
+            <div>
+              <p class="pub-title">{p.data.url ? <a href={p.data.url}>{p.data.title}</a> : p.data.title}</p>
+              <p class="pub-auth">
+                {p.data.authors.map((a, k) => (
+                  <>{k > 0 && ', '}{isMe(a) ? <strong>{short(a)}</strong> : short(a)}</>
+                ))}
+              </p>
+              <p class="pub-venue">
+                <em>{p.data.venue}</em>{p.data.volume && `, ${p.data.volume}`}{p.data.issue && `(${p.data.issue})`}{p.data.pages && `, ${p.data.pages}`}{p.data.articleNumber && `, ${p.data.articleNumber}`}, {p.data.year}.
+              </p>
+              <p class="mono pub-meta">
+                <span>{p.data.role}</span>
+                {p.data.doi && <a href={`https://doi.org/${p.data.doi}`}>doi:{p.data.doi}</a>}
+                <a href={`/bib/${p.id}.bib`} download>BibTeX</a>
+              </p>
+              {p.data.note && <p class="pub-note muted">{p.data.note}</p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <h3 class="label sub">Books, in Turkish</h3>
+      <ul class="books">
+        {books.map((b) => (
+          <li><em>{b.data.title}</em>. {b.data.authors.map(short).join(', ')}. {b.data.publisher}, {b.data.year}.</li>
+        ))}
+      </ul>
+      <p class="mono all"><a href="/publications.bib" download>All as BibTeX</a> · <a href={profile.links[0].url}>Google Scholar</a> · <a href={profile.links[1].url}>ORCID</a></p>
+    </div>
+  </section>
+
+  <section id="experience" class="section" aria-labelledby="exp-title">
+    <header><span class="num">04</span><h2 id="exp-title">Experience</h2></header>
+    <div>
+      <ol class="rows">
+        {profile.experience.map((e) => (
+          <li>
+            <span class="mono when">{e.period}</span>
+            <div><p class="row-title">{e.role}, {e.org} <span class="mono muted">· {e.place}</span></p><p class="muted">{e.text}</p></div>
+          </li>
+        ))}
+      </ol>
+      <h3 class="label sub">Education</h3>
+      <ol class="rows">
+        {profile.education.map((e) => (
+          <li>
+            <span class="mono when">{e.period}</span>
+            <div><p class="row-title">{e.title}</p><p class="muted">{e.org}{e.note && `. ${e.note}.`}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="mentoring" class="section" aria-labelledby="ment-title">
+    <header><span class="num">05</span><h2 id="ment-title">Mentoring and service</h2></header>
+    <ol class="rows">
+      {profile.service.map((s) => (
+        <li>
+          <span class="mono when">{s.period}</span>
+          <div><p class="row-title">{s.role}, {s.url ? <a href={s.url}>{s.org}</a> : s.org}</p><p class="muted">{s.text}</p></div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="contact" class="section" aria-labelledby="contact-title">
+    <header><span class="num">06</span><h2 id="contact-title">Contact</h2></header>
+    <div class="contact">
+      <p>Questions about my work or papers, research collaboration, or a mentoring session: write to me.</p>
+      <p class="mail"><a href={`mailto:${profile.email}`}>{profile.email}</a></p>
+      <ul class="hero-links mono">
+        {profile.links.map((l) => <li><a href={l.url} rel="me">{l.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { display: grid; gap: 28px; padding: 40px 0 56px; align-items: end; }
+  @media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr) 160px; gap: 56px; padding: 72px 0 72px; } }
+  .hero h1 { font-size: var(--step-3); max-width: 20ch; margin: 14px 0 22px; font-weight: 600; letter-spacing: -0.025em; }
+  .lede { max-width: 60ch; color: var(--ink-2); font-size: var(--step-0); }
+  .loc { color: var(--ink-3); margin: 0 0 18px; }
+  .hero-links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .portrait { width: 160px; height: auto; aspect-ratio: 2044 / 1890; object-fit: cover; border: 1px solid var(--ink); }
+  @media (max-width: 899px) { .portrait { order: -1; width: 112px; } }
+
+  .demo { border-top: 1px solid var(--ink); padding: 28px 0 72px; }
+  .demo-head { display: grid; gap: 4px 12px; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; margin-bottom: 24px; }
+  .demo-head .num { color: var(--accent); }
+  .demo-head h2 { font-size: var(--step-1); }
+  .demo-head p { grid-column: 2; margin: 4px 0 0; max-width: 70ch; }
+
+  .work { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .work li { border-bottom: 1px solid var(--rule); }
+  .work-row { display: grid; gap: 2px 28px; padding: 20px 0; text-decoration: none; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 720px) {
+    .work-row { grid-template-columns: 190px minmax(0, 1fr); }
+    .metric, .metric-label { grid-column: 1; }
+    .metric { grid-row: 1; }
+    .metric-label { grid-row: 2 / span 3; align-self: start; }
+    .work-title, .work-sum, .work-meta, .work-go { grid-column: 2; }
+  }
+  .metric { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--ink); line-height: 1.1; }
+  .metric-label { color: var(--ink-3); font-size: 0.75rem; line-height: 1.4; margin-bottom: 8px; }
+  .work-title { font-size: var(--step-1); font-weight: 600; }
+  .work-sum { color: var(--ink-2); }
+  .work-meta { color: var(--ink-3); font-size: 0.75rem; margin-top: 6px; }
+  .work-go { color: var(--accent); font-size: 0.75rem; }
+  .work-row:hover .work-title { color: var(--accent); }
+
+  .interests { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+  .interests li, .pubs li, .rows li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 12px; }
+  .interests h3 { font-size: var(--step-0); margin-bottom: 4px; }
+  .interests p { margin: 0; max-width: 62ch; }
+  .idx { color: var(--accent); padding-top: 3px; }
+  .sub { margin: 40px 0 12px; }
+  .prep { margin: 0; padding-left: 1.1em; max-width: 62ch; color: var(--ink-2); }
+  .prep li::marker { color: var(--accent); }
+
+  .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+  .pubs p { margin: 0; }
+  .pub-title { font-weight: 600; }
+  .pub-title a { text-decoration: none; }
+  .pub-auth, .pub-venue { color: var(--ink-2); font-size: 0.9375rem; }
+  .pub-auth strong { color: var(--ink); font-weight: 600; }
+  .pub-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 4px !important; color: var(--ink-3); font-size: 0.75rem; }
+  .pub-note { font-size: 0.875rem; margin-top: 4px !important; }
+  .books { margin: 0; padding-left: 1.1em; color: var(--ink-2); font-size: 0.9375rem; }
+  .all { margin-top: 24px; font-size: 0.75rem; }
+
+  .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .rows li { grid-template-columns: 96px minmax(0, 1fr); }
+  .rows p { margin: 0; }
+  .when { color: var(--ink-3); padding-top: 3px; font-size: 0.75rem; }
+  .row-title { font-weight: 600; }
+  .rows .muted { font-size: 0.9375rem; }
+
+  .contact p { max-width: 60ch; }
+  .mail { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.02em; }
+  .mail a { text-decoration-thickness: 2px; }
+</style>

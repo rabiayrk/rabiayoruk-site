@@ -1,0 +1,29 @@
+{
+  "name": "rabiayoruk-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "og": "node scripts/og.mjs",
+    "build": "node scripts/og.mjs && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.6.0",
+    "@fontsource-variable/jetbrains-mono": "5.2.8",
+    "@fontsource-variable/schibsted-grotesk": "5.2.8",
+    "astro": "5.18.2"
+  },
+  "devDependencies": {
+    "@fontsource/jetbrains-mono": "5.2.8",
+    "@fontsource/schibsted-grotesk": "5.2.8",
+    "@resvg/resvg-js": "2.6.2",
+    "js-yaml": "4.1.0",
+    "satori": "0.18.3",
+    "wrangler": "4.156.2"
+  }
+}

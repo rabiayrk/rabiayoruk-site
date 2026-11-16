@@ -1,0 +1,115 @@
+---
+interface Props { kind: 'forecast' | 'simulation'; fig: number }
+const { kind, fig } = Astro.props;
+
+let seed = kind === 'forecast' ? 7 : 11;
+const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+const gauss = () => { const u = rand() || 1e-9, v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+
+const W = 720, Hh = 260, L = 44, R = 12, T = 14, B = 30;
+const pw = W - L - R, ph = Hh - T - B;
+
+type Pt = [number, number];
+let lines: { d: string; cls: string }[] = [];
+let band = '';
+let yTicks: number[] = [];
+let xTicks: { x: number; label: string }[] = [];
+let splitX: number | null = null;
+let legend: { cls: string; label: string }[] = [];
+let caption = '';
+let ySy: (v: number) => number = (v) => v;
+
+const toPath = (pts: Pt[]) => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+
+if (kind === 'forecast') {
+  const hist = 40, ahead = 12, n = hist + ahead;
+  const base = (t: number) => 120 + 0.6 * t + 28 * Math.sin((2 * Math.PI * t) / 13) + (t > 30 && t < 34 ? -45 : 0);
+  const actual = Array.from({ length: hist }, (_, t) => base(t) + gauss() * 9);
+  const fc = Array.from({ length: n }, (_, t) => 120 + 0.6 * t + 28 * Math.sin((2 * Math.PI * t) / 13));
+  const ymax = 200, ymin = 40;
+  const sx = (t: number) => L + (t / (n - 1)) * pw;
+  const sy = (v: number) => T + (1 - (v - ymin) / (ymax - ymin)) * ph;
+  const upper: Pt[] = [], lower: Pt[] = [];
+  for (let t = hist - 1; t < n; t++) {
+    const w = 10 + (t - hist + 1) * 1.6;
+    upper.push([sx(t), sy(fc[t] + w)]); lower.push([sx(t), sy(fc[t] - w)]);
+  }
+  band = toPath([...upper, ...lower.reverse()]) + ' Z';
+  lines = [
+    { d: toPath(actual.map((v, t) => [sx(t), sy(v)])), cls: 'actual' },
+    { d: toPath(fc.slice(hist - 1).map((v, i) => [sx(i + hist - 1), sy(v)])), cls: 'forecast' },
+  ];
+  splitX = sx(hist - 1);
+  yTicks = [50, 100, 150, 200].map((v) => v);
+  xTicks = [0, 13, 26, 39, 51].map((t) => ({ x: sx(t), label: `w${t + 1}` }));
+  legend = [{ cls: 'actual', label: 'Actual demand' }, { cls: 'forecast', label: 'Forecast' }, { cls: 'band', label: '80% range' }];
+  caption = 'Weekly demand for one product, with a supply disruption around week 32. Illustrative, synthetic data.';
+  ySy = sy;
+} else {
+  const steps = 60, paths = 40;
+  const sims: number[][] = [];
+  for (let p = 0; p < paths; p++) {
+    let v = 100; const row = [v];
+    for (let s = 1; s <= steps; s++) { v *= Math.exp(0.0008 + 0.018 * gauss()); row.push(v); }
+    sims.push(row);
+  }
+  const pct = (arr: number[], q: number) => { const a = [...arr].sort((x, y) => x - y); return a[Math.floor(q * (a.length - 1))]; };
+  const ymax = 140, ymin = 70;
+  const sx = (s: number) => L + (s / steps) * pw;
+  const sy = (v: number) => T + (1 - (Math.min(Math.max(v, ymin), ymax) - ymin) / (ymax - ymin)) * ph;
+  const up: Pt[] = [], lo: Pt[] = [], med: Pt[] = [];
+  for (let s = 0; s <= steps; s++) {
+    const col = sims.map((r) => r[s]);
+    up.push([sx(s), sy(pct(col, 0.9))]); lo.push([sx(s), sy(pct(col, 0.1))]); med.push([sx(s), sy(pct(col, 0.5))]);
+  }
+  band = toPath([...up, ...lo.reverse()]) + ' Z';
+  lines = [
+    ...sims.slice(0, 6).map((r) => ({ d: toPath(r.map((v, s) => [sx(s), sy(v)])), cls: 'path' })),
+    { d: toPath(med), cls: 'forecast' },
+  ];
+  yTicks = [80, 100, 120, 140];
+  xTicks = [0, 20, 40, 60].map((s) => ({ x: sx(s), label: `day ${s}` }));
+  legend = [{ cls: 'path', label: 'Sample paths' }, { cls: 'forecast', label: 'Median' }, { cls: 'band', label: '10th to 90th percentile' }];
+  caption = 'Projected value of a 100 unit position over 60 trading days. Illustrative, synthetic data.';
+  ySy = sy;
+}
+---
+<figure class="chart">
+  <svg viewBox={`0 0 ${W} ${Hh}`} width={W} height={Hh} role="img" aria-label={caption}>
+    {yTicks.map((v) => (
+      <g>
+        <line x1={L} x2={W - R} y1={ySy(v)} y2={ySy(v)} class="grid" />
+        <text x={L - 8} y={ySy(v) + 4} class="tick" text-anchor="end">{v}</text>
+      </g>
+    ))}
+    {xTicks.map((t) => <text x={t.x} y={Hh - 8} class="tick" text-anchor="middle">{t.label}</text>)}
+    <path d={band} class="band" />
+    {splitX && <line x1={splitX} x2={splitX} y1={T} y2={T + ph} class="split" />}
+    {lines.map((l) => <path d={l.d} class={`ln ${l.cls}`} />)}
+  </svg>
+  <ul class="legend">
+    {legend.map((l) => <li><span class={`key ${l.cls}`}></span>{l.label}</li>)}
+  </ul>
+  <figcaption><span class="label">Fig. {fig}</span> {caption}</figcaption>
+</figure>
+
+<style>
+  .chart { margin: 0; }
+  .chart svg { width: 100%; height: auto; }
+  .grid { stroke: var(--rule); stroke-width: 1; }
+  .tick { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-3); }
+  .band { fill: var(--signal-soft); }
+  .split { stroke: var(--ink-3); stroke-dasharray: 2 3; }
+  .ln { fill: none; stroke-width: 1.6; stroke-linejoin: round; }
+  .ln.actual { stroke: var(--ink); }
+  .ln.forecast { stroke: var(--accent); stroke-width: 2; }
+  .ln.path { stroke: var(--ink-3); stroke-width: 1; opacity: 0.7; }
+  .legend { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 0.75rem; color: var(--ink-2); }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .key { width: 16px; height: 2px; background: var(--ink); display: inline-block; }
+  .key.forecast { background: var(--accent); height: 3px; }
+  .key.path { background: var(--ink-3); height: 1px; }
+  .key.band { background: var(--signal-soft); height: 10px; }
+  figcaption { margin-top: 10px; font-size: var(--step--1); color: var(--ink-2); }
+  figcaption .label { margin-right: 8px; color: var(--accent); }
+</style>

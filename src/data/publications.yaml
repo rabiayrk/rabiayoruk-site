@@ -1,0 +1,81 @@
+# newest first, authors as "Family, Given"
+
+- id: kaplan2025scrapus
+  type: article
+  title: "A review of AI-based business lead generation: Scrapus as a case study"
+  authors: ["Kaplan, Ahmet", "Seker, Sadi Evren", "Yoruk, Rabia"]
+  role: "Third author"
+  venue: "Frontiers in Artificial Intelligence"
+  publisher: "Frontiers Media"
+  year: 2025
+  volume: "8"
+  articleNumber: "1606431"
+  date: "2025-11-06"
+  doi: "10.3389/frai.2025.1606431"
+  url: "https://doi.org/10.3389/frai.2025.1606431"
+  note: "Open access, CC BY. Reports about 90% precision and recall for lead qualification, and extraction F1 rising from about 0.77 to 0.92."
+
+- id: yoruk2025jobagent
+  type: article
+  title: "An AI-based personalised job recommendation and application assistant agent for enhanced employment matching: a Scrapus use case"
+  authors: ["Yörük, Rabia"]
+  role: "Sole author"
+  venue: "Journal of Data Analytics and Artificial Intelligence Applications"
+  publisher: "Istanbul University Press"
+  year: 2025
+  volume: "1"
+  issue: "2"
+  pages: "172-189"
+  date: "2025-07"
+  doi: "10.26650/d3ai.1715642"
+  url: "https://doi.org/10.26650/d3ai.1715642"
+
+- id: yoruk2025kolayai
+  type: article
+  title: "Enhancing SME operations with machine learning and business intelligence: a case study of Kolay.ai"
+  authors: ["Yörük, Rabia"]
+  role: "Sole author"
+  venue: "Journal of Data Analytics and Artificial Intelligence Applications"
+  publisher: "Istanbul University Press"
+  year: 2025
+  volume: "1"
+  issue: "1"
+  pages: "61-83"
+  date: "2025-01"
+  url: "https://dergipark.org.tr/en/pub/jdaia/article/1607791"
+
+- id: yoruk2018clv
+  type: entry
+  title: "Customer lifetime value (Müşteri Yaşamboyu Değeri)"
+  authors: ["Yörük, Rabia", "Eşmekaya, Eda"]
+  role: "First author"
+  venue: "YBS Ansiklopedi"
+  year: 2018
+  volume: "5"
+  issue: "2"
+  pages: "26-40"
+  date: "2018-07"
+  url: "https://ybsansiklopedi.com/cilt-5-sayi-2-temmuz-2018/"
+  language: "tr"
+
+- id: seker2018internet
+  type: book
+  title: "İnternet Nasıl Çalışır? (How the Internet Works)"
+  authors: ["Seker, Sadi Evren", "Yoruk, Rabia"]
+  role: "Co-author"
+  venue: "Bilkav"
+  publisher: "Bilkav"
+  year: 2018
+  date: "2018-05"
+  language: "tr"
+
+- id: seker2018cpp
+  type: book
+  title: "Başlangıç Düzeyinde C++ Öğrenimine Giriş (Introduction to C++ for Beginners)"
+  authors: ["Seker, Sadi Evren", "Yoruk, Rabia"]
+  role: "Co-author"
+  venue: "Bilkav"
+  publisher: "Bilkav"
+  year: 2018
+  date: "2018-03"
+  language: "tr"

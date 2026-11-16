@@ -1,0 +1,52 @@
+name: "Rabia Yoruk"
+title: "Senior Software Engineer"
+email: "rabiayrk@gmail.com"
+site: "https://rabiayoruk.com"
+location: "Türkiye and the US."
+
+intro: "I build data and LLM systems that run in production, and I study how they fail."
+lede: "Senior Software Engineer with 7+ years in Python, backend, data pipelines, ML and LLM applications (RAG, agents). From January 2027 I am an M.S. student in Software and Security Engineering at Texas Tech University."
+
+links:
+  - { label: "Google Scholar", url: "https://scholar.google.com/citations?user=r2U_8mAAAAAJ&hl=en" }
+  - { label: "ORCID", url: "https://orcid.org/0009-0007-2222-9323" }
+  - { label: "GitHub", url: "https://github.com/rabiayrk" }
+  - { label: "LinkedIn", url: "https://www.linkedin.com/in/rabia-yoruk/" }
+
+cvs:
+  - { label: "CV, Backend", file: "/cv/rabia-yoruk-cv-backend.pdf", available: true }
+  - { label: "CV, Data and ML", file: "/cv/rabia-yoruk-cv-data-ml.pdf", available: true }
+
+research:
+  - title: "Reliable LLM systems"
+    text: "When does an LLM classifier stay correct after the data changes? I measure drift, hallucination and failure modes in systems that run every day."
+  - title: "Cost and safety of ML in production"
+    text: "Accuracy is one number. Cost per record, latency and the price of a wrong decision are others. I look for designs that keep all of them in check."
+  - title: "Web data at scale"
+    text: "Agents and crawlers that collect public web data, and ways to evaluate them honestly: coverage, freshness and error rates."
+
+inPreparation:
+  - "Cost, accuracy and drift in LLM-based classification of web records."
+  - "An evaluation framework for agent-based web data collection."
+  - "Detecting hallucinations in production RAG decisions."
+
+education:
+  - { period: "2027-2029", title: "M.S. Software and Security Engineering", org: "Texas Tech University, Dallas, TX", note: "Starts January 2027" }
+  - { period: "2024-2025", title: "Graduate coursework in Data Science", org: "Galatasaray University, Istanbul", note: "Courses, not a degree" }
+  - { period: "2017-2022", title: "B.S. Software Engineering", org: "Istanbul Sabahattin Zaim University, Istanbul" }
+
+experience:
+  - { period: "2025-2026", role: "Senior Software Engineer", org: "PeK Automotive (Peker Holding)", place: "Slovenia, remote", text: "Backend services and workflows for a manufacturing ERP. Python, Django, Angular." }
+  - { period: "2025-now", role: "Co-founder", org: "Scrapus", place: "Tallinn, part-time", text: "Web monitoring product. About 60,000 records a day for TEB, from collection to API." }
+  - { period: "2025", role: "Senior Software Engineer", org: "AI startup", place: "US, remote", text: "Built an AI cold outreach platform for sales teams, from zero to first trial users." }
+  - { period: "2023-2025", role: "Tech Lead", org: "OptiWisdom", place: "Istanbul", text: "Led about five parallel client projects, 20+ delivered. AutoML platform for a large telecommunications company." }
+  - { period: "2022-2023", role: "Data Scientist and ML Engineer", org: "OptiWisdom", place: "Remote", text: "Kolay.AI demand forecasting and the XchangeWiser market simulation." }
+  - { period: "2020-2022", role: "Software Engineer, Backend and Data", org: "OptiWisdom", place: "Remote", text: "REST APIs, Celery and Redis jobs, PostgreSQL and MySQL tuning." }
+  - { period: "2019", role: "Software Developer", org: "Epigra", place: "Istanbul", text: "Web apps and CMS projects in PHP and Laravel." }
+  - { period: "2018-2019", role: "Python Developer", org: "Bilkav", place: "Istanbul", text: "Python tools. Co-wrote two programming books." }
+
+service:
+  - { period: "2026-now", role: "Fellow mentor", org: "ADPList", text: "Career direction, interview practice and portfolio projects for students and early career developers.", url: "https://adplist.org/mentors/rabia-yoruk-mw8wtyc0" }
+  - { period: "2025-2026", role: "Mentor", org: "Türkiye'nin Mühendis Kızları (Engineer Girls of Türkiye)", text: "Monthly one-to-one sessions with women engineering students and new engineers." }
+  - { period: "2023-2025", role: "Event director, Keep It Up Network", org: "JCI Antalya", text: "Ran a networking event series for local business owners and investors." }
+  - { period: "2019-2020", role: "Vice chair", org: "IEEE IZU Student Branch", text: "Company visits, Arduino workshops and technical competitions." }

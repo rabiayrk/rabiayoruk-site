@@ -1,0 +1,355 @@
+---
+import { examples, runRules } from '../data/listings';
+
+const sources = ['Marketplace A', 'Marketplace B', 'Classified ads', 'Social shops'];
+const short = ['Market A', 'Market B', 'Classifieds', 'Social'];
+
+// desktop
+const H = {
+  w: 950, h: 300,
+  src: sources.map((_, i) => ({ x: 8, y: 40 + i * 58, w: 150, h: 46 })),
+  crawl: { x: 204, y: 125, w: 150, h: 50 },
+  norm: { x: 400, y: 125, w: 150, h: 50 },
+  llm: { x: 596, y: 125, w: 150, h: 50 },
+  api: { x: 792, y: 90, w: 150, h: 50 },
+  arch: { x: 792, y: 160, w: 150, h: 50 },
+};
+const hRoute = (i: number, out: 'api' | 'arch') => {
+  const s = H.src[i];
+  const sy = s.y + s.h / 2;
+  const oy = H[out].y + H[out].h / 2;
+  return `M158 ${sy} H181 V150 H596 H746 H769 V${oy} H850`;
+};
+
+// mobile
+const V = {
+  w: 336, h: 372,
+  src: sources.map((_, i) => ({ x: 8 + i * 82, y: 8, w: 74, h: 40 })),
+  crawl: { x: 68, y: 84, w: 200, h: 46 },
+  norm: { x: 68, y: 160, w: 200, h: 46 },
+  llm: { x: 68, y: 236, w: 200, h: 46 },
+  api: { x: 12, y: 318, w: 150, h: 46 },
+  arch: { x: 174, y: 318, w: 150, h: 46 },
+};
+const vRoute = (i: number, out: 'api' | 'arch') => {
+  const s = V.src[i];
+  const cx = s.x + s.w / 2;
+  const ox = V[out].x + V[out].w / 2;
+  return `M${cx} 48 V66 H168 V282 V300 H${ox} V345`;
+};
+
+const routes = [0, 1, 2, 3].flatMap((i) => (['api', 'arch'] as const).map((o) => ({ i, o })));
+const first = examples[0];
+const firstRules = runRules(first.title);
+const chipText = { flag: 'Flag', clear: 'Clear', review: 'Review' } as const;
+---
+<div class="pipeline" data-pipeline>
+  <div class="pl-figure">
+    {[{ g: H, route: hRoute, cls: 'h', srcLabel: sources, fs: 12.5 }, { g: V, route: vRoute, cls: 'v', srcLabel: short, fs: 11 }].map(({ g, route, cls, srcLabel, fs }) => (
+      <svg class={`pl-svg ${cls}`} viewBox={`0 0 ${g.w} ${g.h}`} width={g.w} height={g.h} role="img" aria-labelledby={`pl-${cls}-t`} data-orient={cls}>
+        <title id={`pl-${cls}-t`}>Scrapus pipeline: four kinds of public sources feed the crawlers, records are normalized, an LLM with retrieval classifies them, flagged records go to TEB through a REST API and cleared ones go to an archive.</title>
+        <g class="pl-edges">
+          {routes.filter((r) => r.o === 'api').map((r) => <path d={route(r.i, 'api')} />)}
+          <path d={route(0, 'arch')} />
+        </g>
+        <g class="pl-routes" aria-hidden="true">
+          {routes.map((r) => <path data-route={`${r.i}-${r.o}`} d={route(r.i, r.o)} />)}
+        </g>
+        <g class="pl-dots" aria-hidden="true"></g>
+        <g class="pl-nodes">
+          {g.src.map((s, i) => (
+            <g class="pl-node ext">
+              <rect x={s.x} y={s.y} width={s.w} height={s.h} rx="2" />
+              <text x={s.x + 8} y={s.y + s.h / 2 + 4} style={`font-size:${fs}px`}>{srcLabel[i]}</text>
+            </g>
+          ))}
+          <g class="pl-node"><rect x={g.crawl.x} y={g.crawl.y} width={g.crawl.w} height={g.crawl.h} rx="2" /><text x={g.crawl.x + 10} y={g.crawl.y + 20}>Crawlers</text><text class="n" x={g.crawl.x + 10} y={g.crawl.y + 36}>scheduled runs</text></g>
+          <g class="pl-node"><rect x={g.norm.x} y={g.norm.y} width={g.norm.w} height={g.norm.h} rx="2" /><text x={g.norm.x + 10} y={g.norm.y + 20}>Normalize</text><text class="n" x={g.norm.x + 10} y={g.norm.y + 36}>clean, dedupe</text></g>
+          <a href="#playground" class="pl-link" aria-label="LLM classify stage. Open the playground.">
+            <g class="pl-node model"><rect x={g.llm.x} y={g.llm.y} width={g.llm.w} height={g.llm.h} rx="2" /><text x={g.llm.x + 10} y={g.llm.y + 20}>LLM classify</text><text class="n" x={g.llm.x + 10} y={g.llm.y + 36}>RAG · open playground</text></g>
+          </a>
+          <g class="pl-node"><rect x={g.api.x} y={g.api.y} width={g.api.w} height={g.api.h} rx="2" /><text x={g.api.x + 10} y={g.api.y + 20}>REST API</text><text class="n" x={g.api.x + 10} y={g.api.y + 36}>flagged, to TEB</text></g>
+          <g class="pl-node"><rect x={g.arch.x} y={g.arch.y} width={g.arch.w} height={g.arch.h} rx="2" /><text x={g.arch.x + 10} y={g.arch.y + 20}>Archive</text><text class="n" x={g.arch.x + 10} y={g.arch.y + 36}>cleared</text></g>
+        </g>
+      </svg>
+    ))}
+  </div>
+
+  <div class="pl-bar">
+    <p class="mono pl-note">Illustrative. Listings are synthetic. The volume is real: about 60,000 records a day.</p>
+    <div class="pl-controls needs-js">
+      <span class="mono pl-clock" data-clock>Simulated 08:00</span>
+      <span class="mono" data-count>0 records</span>
+      <button class="btn" type="button" data-toggle aria-pressed="false">Pause</button>
+    </div>
+  </div>
+  <p class="mono pl-scale needs-js">One second on screen is one minute of traffic. Each dot is 10 records. The flag rate here is made up.</p>
+
+  <div class="pl-feed needs-js">
+    <h3 class="label">Latest delivered records</h3>
+    <ol data-feed></ol>
+    <pre class="pl-json" data-json hidden></pre>
+  </div>
+
+  <section id="playground" class="pg" aria-labelledby="pg-title">
+    <header>
+      <h3 id="pg-title">Playground: rules vs LLM</h3>
+      <p class="muted">The classify stage, up close. A keyword rule list is the baseline. The LLM reads the listing and the retrieved reference entries. Pick a listing.</p>
+    </header>
+    <div class="pg-pick needs-js" role="group" aria-label="Example listings">
+      {examples.map((e, i) => (
+        <button class="btn" type="button" data-ex={e.id} aria-pressed={i === 0 ? 'true' : 'false'}>{String(i + 1).padStart(2, '0')}</button>
+      ))}
+    </div>
+    <div class="pg-listing">
+      <span class="label">Listing</span>
+      <p class="pg-title" data-pg-title>{first.title}</p>
+      <p class="mono muted" data-pg-meta>{first.source} · {first.price}</p>
+    </div>
+    <div class="pg-cols">
+      <div class="pg-col">
+        <span class="label">Keyword rules</span>
+        <p><span class={`chip chip--${firstRules.decision}`} data-rule-chip>{chipText[firstRules.decision]}</span></p>
+        <p class="mono" data-rule-why>Matched: {firstRules.matches.join(', ') || 'nothing'}</p>
+      </div>
+      <div class="pg-col">
+        <span class="label">LLM with retrieval</span>
+        <p><span class={`chip chip--${first.llm.decision}`} data-llm-chip>{chipText[first.llm.decision]}</span> <span class="mono muted" data-llm-conf>confidence {first.llm.confidence.toFixed(2)}</span></p>
+        <p data-llm-why>{first.llm.reason}</p>
+        <p class="mono muted" data-llm-ev>{first.llm.evidence}</p>
+      </div>
+    </div>
+    <form class="pg-free needs-js" data-free>
+      <label for="pg-input" class="label">Try your own text (rules only)</label>
+      <div class="pg-row">
+        <input id="pg-input" name="q" type="text" maxlength="160" placeholder="Vitamin C 1000 mg tablets, 30 pcs" autocomplete="off" />
+        <button class="btn" type="submit">Run rules</button>
+      </div>
+      <p class="mono muted pg-hint">This page is static. It does not call a model, so your own text only runs the keyword rules.</p>
+    </form>
+    <p class="no-js-only mono muted">Turn on JavaScript to see the other seven listings and the moving pipeline.</p>
+  </section>
+</div>
+
+<script>
+  import { examples, runRules, feedFlagged, feedCleared, type Example } from '../data/listings';
+
+  const root = document.querySelector<HTMLElement>('[data-pipeline]')!;
+  const chipText = { flag: 'Flag', clear: 'Clear', review: 'Review' } as const;
+  const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+
+  const showRules = (text: string) => {
+    const r = runRules(text);
+    const chip = $<HTMLElement>('[data-rule-chip]');
+    chip.className = `chip chip--${r.decision}`;
+    chip.textContent = chipText[r.decision];
+    $('[data-rule-why]').textContent = `Matched: ${r.matches.join(', ') || 'nothing'}`;
+  };
+  const setLlm = (e: Example | null) => {
+    const chip = $<HTMLElement>('[data-llm-chip]');
+    if (!e) {
+      chip.className = 'chip chip--review';
+      chip.textContent = 'Not run';
+      $('[data-llm-conf]').textContent = '';
+      $('[data-llm-why]').textContent = 'No model call on a static page. Pick one of the eight listings to see a prepared LLM decision.';
+      $('[data-llm-ev]').textContent = '';
+      return;
+    }
+    chip.className = `chip chip--${e.llm.decision}`;
+    chip.textContent = chipText[e.llm.decision];
+    $('[data-llm-conf]').textContent = `confidence ${e.llm.confidence.toFixed(2)}`;
+    $('[data-llm-why]').textContent = e.llm.reason;
+    $('[data-llm-ev]').textContent = e.llm.evidence;
+  };
+  const pick = (id: string) => {
+    const e = examples.find((x) => x.id === id);
+    if (!e) return;
+    root.querySelectorAll<HTMLButtonElement>('[data-ex]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.ex === id)));
+    $('[data-pg-title]').textContent = e.title;
+    $('[data-pg-meta]').textContent = `${e.source} · ${e.price}`;
+    showRules(e.title);
+    setLlm(e);
+  };
+  root.querySelectorAll<HTMLButtonElement>('[data-ex]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.ex!)));
+  $<HTMLFormElement>('[data-free]').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const text = ($<HTMLInputElement>('#pg-input').value || '').trim();
+    if (!text) return;
+    root.querySelectorAll('[data-ex]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    $('[data-pg-title]').textContent = text;
+    $('[data-pg-meta]').textContent = 'Your text';
+    showRules(text);
+    setLlm(null);
+  });
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const toggle = $<HTMLButtonElement>('[data-toggle]');
+  const feed = $<HTMLOListElement>('[data-feed]');
+  const json = $<HTMLPreElement>('[data-json]');
+  const clock = $('[data-clock]');
+  const count = $('[data-count]');
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const SPAWN_MS = 240; // ~60k/day, 10 records per dot
+  const TRAVEL_MS = 2600;
+  const FLAG_RATE = 0.12;
+
+  let running = false;
+  let visible = false;
+  let simMs = 8 * 3_600_000;
+  let records = 0;
+  let last = 0;
+  let sinceSpawn = 0;
+  let seq = 0;
+  type Dot = { el: SVGCircleElement; path: SVGPathElement; len: number; t: number; rec: Rec };
+  type Rec = { id: string; source: string; title: string; label: 'flagged' | 'cleared'; time: string; conf: number };
+  let dots: Dot[] = [];
+
+  const activeSvg = () => [...root.querySelectorAll<SVGSVGElement>('.pl-svg')].find((s) => s.getBoundingClientRect().width > 0);
+  const sourceNames = ['marketplace_a', 'marketplace_b', 'classified_ads', 'social_shops'];
+  const hex = () => Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
+  const fmt = (ms: number) => {
+    const min = Math.floor(ms / 60_000);
+    return `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+  };
+
+  const makeRecord = (): { i: number; rec: Rec } => {
+    const i = Math.floor(Math.random() * 4);
+    const flagged = Math.random() < FLAG_RATE;
+    const pool = flagged ? feedFlagged : feedCleared;
+    return {
+      i,
+      rec: {
+        id: `rec_${hex()}`,
+        source: sourceNames[i],
+        title: pool[Math.floor(Math.random() * pool.length)],
+        label: flagged ? 'flagged' : 'cleared',
+        time: fmt(simMs),
+        conf: Math.round((flagged ? 0.8 + Math.random() * 0.19 : 0.85 + Math.random() * 0.14) * 100) / 100,
+      },
+    };
+  };
+
+  const spawn = () => {
+    const svg = activeSvg();
+    if (!svg) return;
+    const { i, rec } = makeRecord();
+    const path = svg.querySelector<SVGPathElement>(`[data-route="${i}-${rec.label === 'flagged' ? 'api' : 'arch'}"]`)!;
+    const el = document.createElementNS(SVGNS, 'circle');
+    el.setAttribute('r', svg.dataset.orient === 'v' ? '3.5' : '4.5');
+    el.setAttribute('class', rec.label === 'flagged' ? 'dot dot--flag' : 'dot');
+    svg.querySelector('.pl-dots')!.appendChild(el);
+    dots.push({ el, path, len: path.getTotalLength(), t: 0, rec });
+  };
+
+  const deliver = (rec: Rec) => {
+    records += 10;
+    count.textContent = `${records.toLocaleString('en-US')} records`;
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'feed-row';
+    b.innerHTML = `<span class="mono muted"></span><span class="t"></span><span class="chip chip--${rec.label === 'flagged' ? 'flag' : 'clear'}">${rec.label === 'flagged' ? 'Flag' : 'Clear'}</span>`;
+    (b.children[0] as HTMLElement).textContent = rec.time;
+    (b.children[1] as HTMLElement).textContent = rec.title;
+    b.addEventListener('click', () => {
+      json.hidden = false;
+      json.textContent = JSON.stringify({
+        id: rec.id, source: rec.source, title: rec.title, seller: `seller_${rec.id.slice(4, 8)}`,
+        label: rec.label, model_confidence: rec.conf, delivered_to: rec.label === 'flagged' ? 'teb_api' : 'archive',
+        synthetic: true,
+      }, null, 2);
+    });
+    li.appendChild(b);
+    feed.prepend(li);
+    while (feed.children.length > 6) feed.lastElementChild!.remove();
+  };
+
+  const frame = (now: number) => {
+    if (!running || !visible) { last = 0; return; }
+    const dt = last ? Math.min(now - last, 100) : 16;
+    last = now;
+    simMs += dt * 60;
+    clock.textContent = `Simulated ${fmt(simMs)}`;
+    sinceSpawn += dt;
+    while (sinceSpawn >= SPAWN_MS) { sinceSpawn -= SPAWN_MS; spawn(); }
+    dots = dots.filter((d) => {
+      d.t += dt / TRAVEL_MS;
+      if (d.t >= 1) { d.el.remove(); deliver(d.rec); return false; }
+      const p = d.path.getPointAtLength(d.t * d.len);
+      d.el.setAttribute('cx', p.x.toFixed(1));
+      d.el.setAttribute('cy', p.y.toFixed(1));
+      return true;
+    });
+    requestAnimationFrame(frame);
+  };
+
+  const setRunning = (on: boolean) => {
+    running = on;
+    toggle.textContent = on ? 'Pause' : 'Play';
+    toggle.setAttribute('aria-pressed', String(!on));
+    if (on && visible) requestAnimationFrame(frame);
+  };
+  toggle.addEventListener('click', () => setRunning(!running));
+
+  new IntersectionObserver((entries) => {
+    visible = entries[0].isIntersecting && !document.hidden;
+    if (visible && running) requestAnimationFrame(frame);
+  }, { threshold: 0.1 }).observe(root.querySelector('.pl-figure')!);
+  document.addEventListener('visibilitychange', () => {
+    visible = !document.hidden;
+    if (visible && running) requestAnimationFrame(frame);
+  });
+  matchMedia('(min-width: 720px)').addEventListener('change', () => { dots.forEach((d) => d.el.remove()); dots = []; });
+
+  for (let k = 0; k < 6; k++) { simMs += 14_000; deliver(makeRecord().rec); }
+  setRunning(!reduce.matches);
+</script>
+
+<style>
+  .pipeline { display: grid; gap: 18px; }
+  .pl-figure svg { width: 100%; height: auto; }
+  .pl-svg.h { display: none; }
+  .pl-svg.v { max-width: 420px; margin: 0 auto; }
+  @media (min-width: 720px) { .pl-svg.h { display: block; } .pl-svg.v { display: none; } }
+  .pl-edges path { fill: none; stroke: var(--rule-2); stroke-width: 1; }
+  .pl-routes path { fill: none; stroke: none; }
+  .pl-node rect { fill: var(--bg); stroke: var(--ink); stroke-width: 1; }
+  .pl-node.ext rect { stroke: var(--rule-2); stroke-dasharray: 3 3; }
+  .pl-node.model rect { fill: var(--signal-soft); stroke: var(--accent); }
+  .pl-node text { font-family: var(--sans); font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+  .pl-node.ext text { font-weight: 500; fill: var(--ink-2); }
+  .pl-node text.n { font-family: var(--mono); font-size: 10.5px; font-weight: 400; fill: var(--ink-3); }
+  .pl-link:hover rect, .pl-link:focus-visible rect { stroke-width: 2; }
+  .pl-link:focus-visible { outline: none; }
+  .pl-link:focus-visible rect { stroke: var(--focus); }
+  :global(.dot) { fill: var(--ink-3); }
+  :global(.dot--flag) { fill: var(--signal); }
+
+  .pl-bar { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; align-items: center; border-top: 1px solid var(--rule); padding-top: 12px; }
+  .pl-note { margin: 0; color: var(--ink-2); }
+  .pl-controls { display: flex; gap: 16px; align-items: center; }
+  .pl-clock, [data-count] { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .pl-scale { margin: -8px 0 0; color: var(--ink-3); font-size: 0.75rem; }
+
+  .pl-feed ol { list-style: none; margin: 8px 0 0; padding: 0; border-top: 1px solid var(--rule); }
+  .pl-feed li { border-bottom: 1px solid var(--rule); }
+  :global(.feed-row) { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; text-align: left; background: none; border: 0; padding: 7px 0; cursor: pointer; font-size: 0.9375rem; }
+  :global(.feed-row:hover .t) { color: var(--accent); }
+  :global(.feed-row .t) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pl-json { font-family: var(--mono); font-size: 0.75rem; background: var(--bg-2); padding: 12px 14px; margin: 12px 0 0; overflow-x: auto; border-left: 2px solid var(--signal); }
+
+  .pg { border: 1px solid var(--ink); padding: 20px; display: grid; gap: 16px; scroll-margin-top: 24px; }
+  .pg header h3 { font-size: var(--step-1); margin-bottom: 6px; }
+  .pg header p { margin: 0; max-width: 64ch; }
+  .pg-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pg-title { font-size: var(--step-1); font-weight: 500; margin: 4px 0 2px; }
+  .pg-listing p:last-child { margin: 0; }
+  .pg-cols { display: grid; gap: 16px; }
+  @media (min-width: 720px) { .pg-cols { grid-template-columns: 1fr 1fr; gap: 28px; } }
+  .pg-col { border-top: 1px solid var(--rule); padding-top: 10px; }
+  .pg-col p { margin: 8px 0 0; }
+  .pg-free { display: grid; gap: 6px; }
+  .pg-row { display: flex; gap: 8px; }
+  .pg-row input { flex: 1; min-width: 0; font: inherit; font-size: 0.9375rem; padding: 6px 10px; background: var(--bg); color: var(--ink); border: 1px solid var(--rule-2); border-radius: 2px; }
+  .pg-hint { margin: 0; font-size: 0.75rem; }
+</style>
