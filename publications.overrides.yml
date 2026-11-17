@@ -17,8 +17,7 @@ works:
       enhanced employment matching: a Scrapus use case
     publisher: Istanbul University Press
 
-  # No DOI: matched by the ORCID put-code, which stays the same if you edit the title in ORCID.
-  - match: {id: "orcid:233552366"}
+  - match: {doi: 10.26650/d3ai.1607791}
     key: yoruk2025kolayai
     role: Sole author
     month: 1
