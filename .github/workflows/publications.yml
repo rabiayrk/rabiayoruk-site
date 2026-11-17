@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rabiayrk/orcid2site@v0.1.0
+      - uses: rabiayrk/orcid2site@v0.2.1
         with:
           orcid: 0009-0007-2222-9323
           overrides: publications.overrides.yml
