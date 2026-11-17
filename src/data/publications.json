@@ -76,10 +76,10 @@
       ]
     },
     {
-      "id": "orcid:233552366",
+      "id": "doi:10.26650/d3ai.1607791",
       "key": "yoruk2025kolayai",
       "type": "article",
-      "title": "Enhancing SME operations with machine learning and business intelligence: a case study of Kolay.ai",
+      "title": "Enhancing SME Operations with Machine Learning and Business Intelligence: A Case Study of Kolay.ai",
       "authors": [
         {
           "name": "Rabia Yörük",
@@ -90,16 +90,19 @@
       ],
       "year": 2025,
       "month": 1,
-      "date": "2025-01",
+      "day": 27,
+      "date": "2025-01-27",
       "venue": "Journal of Data Analytics and Artificial Intelligence Applications",
-      "publisher": "Istanbul University Press",
+      "publisher": "Istanbul University",
       "volume": "1",
       "issue": "1",
       "pages": "61-83",
-      "url": "https://dergipark.org.tr/en/pub/jdaia/article/1607791",
-      "role": "Sole author",
+      "doi": "10.26650/d3ai.1607791",
+      "url": "https://doi.org/10.26650/d3ai.1607791",
+      "language": "en",
       "sources": [
-        "orcid"
+        "orcid",
+        "crossref"
       ]
     },
     {
